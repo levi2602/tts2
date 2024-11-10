@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech (Tiếng Việt)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        textarea {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 50%;
+        }
+        input[type="number"] {
+            width: 50px;
+            padding: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chuyển đổi văn bản thành âm thanh (Tiếng Việt)</h1>
+
+    <label for="text">Nhập văn bản của bạn:</label><br>
+    <textarea id="text" rows="5" placeholder="Gõ văn bản ở đây..."></textarea><br><br>
+
+    <label for="speed">Tốc độ đọc: </label>
+    <input type="range" id="speed" min="0.5" max="2" value="1" step="0.1">
+    <span id="speedValue">1</span>x<br><br>
+
+    <label for="repeat">Số lần lặp lại mỗi câu: </label>
+    <input type="number" id="repeat" min="1" value="1"><br><br>
+
+    <button onclick="speakText()">Chuyển thành âm thanh</button>
+    <button onclick="pauseSpeech()">Tạm dừng</button>
+    <button onclick="resumeSpeech()">Tiếp tục</button>
+    <button onclick="stopSpeech()">Dừng</button>
+
+    <script>
+        const speedRange = document.getElementById('speed');
+        const speedValue = document.getElementById('speedValue');
+        let isPaused = false;  // Biến kiểm tra tạm dừng
+        let utteranceQueue = [];  // Hàng đợi các câu văn bản sẽ được nói
+
+        speedRange.addEventListener('input', function() {
+            speedValue.textContent = speedRange.value;
+        });
+
+        function speakText() {
+            stopSpeech(); // Dừng các câu đang nói trước khi bắt đầu mới
+
+            const text = document.getElementById('text').value;
+            const speed = parseFloat(document.getElementById('speed').value);
+            const repeat = parseInt(document.getElementById('repeat').value);
+            const sentences = text.split(/[\.\!\?]+/).filter(Boolean);
+
+            sentences.forEach(sentence => {
+                for (let i = 0; i < repeat; i++) {
+                    const utterance = new SpeechSynthesisUtterance(sentence.trim());
+                    utterance.lang = 'vi-VN';
+                    utterance.rate = speed;
+                    utteranceQueue.push(utterance);  // Thêm câu vào hàng đợi
+                    speechSynthesis.speak(utterance);
+                }
+            });
+        }
+
+        function pauseSpeech() {
+            if (!isPaused) {
+                speechSynthesis.pause();
+                isPaused = true;
+            }
+        }
+
+        function resumeSpeech() {
+            if (isPaused) {
+                speechSynthesis.resume();
+                isPaused = false;
+            }
+        }
+
+        function stopSpeech() {
+            speechSynthesis.cancel();
+            utteranceQueue = [];  // Xóa hàng đợi
+        }
+    </script>
+</body>
+</html>
