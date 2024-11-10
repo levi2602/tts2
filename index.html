@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Speech (Tiếng Việt)</title>
+    <title>Text to Speech (Tiếng Việt & Tiếng Anh)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,6 +33,10 @@
             padding: 5px;
             font-size: 16px;
         }
+        select {
+            padding: 5px;
+            font-size: 16px;
+        }
         button {
             background-color: #4CAF50;
             color: white;
@@ -49,7 +53,7 @@
     </style>
 </head>
 <body>
-    <h1>Chuyển đổi văn bản thành âm thanh (Tiếng Việt)</h1>
+    <h1>Chuyển đổi văn bản thành âm thanh (Tiếng Việt & Tiếng Anh)</h1>
 
     <label for="text">Nhập văn bản của bạn:</label><br>
     <textarea id="text" rows="5" placeholder="Gõ văn bản ở đây..."></textarea><br><br>
@@ -60,6 +64,12 @@
 
     <label for="repeat">Số lần lặp lại mỗi câu: </label>
     <input type="number" id="repeat" min="1" value="1"><br><br>
+
+    <label for="language">Chọn ngôn ngữ đọc: </label>
+    <select id="language">
+        <option value="vi-VN">Tiếng Việt</option>
+        <option value="en-US">English</option>
+    </select><br><br>
 
     <button onclick="speakText()">Chuyển thành âm thanh</button>
     <button onclick="pauseSpeech()">Tạm dừng</button>
@@ -82,12 +92,13 @@
             const text = document.getElementById('text').value;
             const speed = parseFloat(document.getElementById('speed').value);
             const repeat = parseInt(document.getElementById('repeat').value);
-            const sentences = text.split(/[\.\!\?]+/).filter(Boolean);
+            const language = document.getElementById('language').value;
+            const sentences = text.split(/[\.\!\\?]+/).filter(Boolean);
 
             sentences.forEach(sentence => {
                 for (let i = 0; i < repeat; i++) {
                     const utterance = new SpeechSynthesisUtterance(sentence.trim());
-                    utterance.lang = 'vi-VN';
+                    utterance.lang = language;
                     utterance.rate = speed;
                     utteranceQueue.push(utterance);  // Thêm câu vào hàng đợi
                     speechSynthesis.speak(utterance);
